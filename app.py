@@ -1,155 +1,135 @@
-
 import streamlit as st
 import joblib
 import time
 
-# 1. Load the pre-trained machine learning model and vectorizer
+# 1. Load Models Fast
 @st.cache_resource
 def load_models():
     vec = joblib.load('vectorizer.pkl')
     mod = joblib.load('model.pkl')
     return vec, mod
 
-# 2. UI Configuration and Page Setup
-# Setting the page layout and forcing a clean title
-st.set_page_config(page_title="TruthLens Verification", page_icon="📰", layout="centered")
+# 2. Modern Page Config
+st.set_page_config(page_title="TruthLens", page_icon="🌐", layout="centered", initial_sidebar_state="collapsed")
 
-# Custom CSS for Professional Orange & White News Portal Theme
+# 3. Premium CSS Injection (Overrides Dark Mode elements gracefully)
 st.markdown("""
     <style>
-    /* Main Background and Text Colors */
-    .stApp {
-        background-color: #FAFAFA;
-    }
-    
-    /* Professional Orange Top Banner */
-    .news-banner {
-        background-color: #FF6600;
-        color: #FFFFFF;
-        padding: 20px;
-        border-radius: 8px;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        margin-bottom: 10px;
-    }
-    .news-banner h1 {
-        margin: 0;
-        font-size: 2.8rem;
-        font-weight: 900;
-        letter-spacing: 1.5px;
-        color: #FFFFFF !important;
-    }
-    .news-banner p {
-        margin: 5px 0 0 0;
-        font-size: 1.1rem;
-        font-weight: 500;
-        opacity: 0.9;
-    }
-    
-    /* Sub-header styling */
-    .system-status {
-        text-align: center;
-        font-size: 0.9rem;
-        color: #666666;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 30px;
-        font-weight: 600;
-    }
-
-    /* Orange Button Styling */
-    div.stButton > button:first-child {
-        background-color: #FF6600;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 12px 24px;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        width: 100%;
-        transition: all 0.3s ease;
-    }
-    div.stButton > button:first-child:hover {
-        background-color: #E65C00;
-        color: white;
-        box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
-    }
-    
-    /* Result Box Styling */
-    .result-box-real {
-        border-left: 5px solid #28a745;
-        background-color: #f8fff9;
-        padding: 15px;
-        border-radius: 4px;
-        margin-top: 20px;
-    }
-    .result-box-fake {
-        border-left: 5px solid #dc3545;
-        background-color: #fff8f8;
-        padding: 15px;
-        border-radius: 4px;
-        margin-top: 20px;
-    }
+        /* Sleek Header styling */
+        .header-container {
+            text-align: center;
+            padding: 2rem 0 1.5rem 0;
+        }
+        .logo-text {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #FF6A00 0%, #FF3D00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+        .sub-text {
+            color: #888;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+        }
+        
+        /* Modern Button Styling */
+        .stButton>button {
+            background: linear-gradient(90deg, #FF6A00 0%, #FF9100 100%);
+            color: white !important;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.2);
+        }
+        .stButton>button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
+        }
+        
+        /* Clean Result Cards */
+        .result-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            background-color: white;
+            border: 1px solid #EAEAEA;
+        }
+        .fake-news { border-left: 6px solid #FF3B30; }
+        .real-news { border-left: 6px solid #34C759; }
+        
+        /* Input label fix */
+        .stTextInput label {
+            display: none;
+        }
     </style>
     """, unsafe_allow_html=True)
 
-# Load Models safely
+# Load Models
 try:
     vectorizer, model = load_models()
-except Exception as e:
-    st.error("⚠️ System Error: Verification models offline. Please ensure 'model.pkl' and 'vectorizer.pkl' are active.")
+except Exception:
+    st.error("System Error: model.pkl or vectorizer.pkl missing.")
     st.stop()
 
-# 3. Official Portal Header
+# 4. Clean Header
 st.markdown("""
-    <div class="news-banner">
-        <h1>TRUTHLENS</h1>
-        <p>Global News Verification & Fact-Checking Engine</p>
+    <div class="header-container">
+        <h1 class="logo-text">TRUTHLENS</h1>
+        <p class="sub-text">AI-POWERED NEWS VERIFICATION</p>
     </div>
-    <div class="system-status">System Active • Maintained by Gaurav</div>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# 4. User Input Section
-st.markdown("### 🔍 Verification Portal")
+# 5. Search Bar Interface
 headline = st.text_input(
-    "Enter the news headline or article title below to scan against our machine learning database:", 
-    placeholder="e.g., White House releases new statement regarding the economy..."
+    "Search", 
+    placeholder="🔍 Paste a news headline here to analyze its authenticity..."
 )
 
 st.write("") # Spacer
 
-# 5. Core Logic and Processing
-if st.button("Initialize Scan"):
-    if headline.strip() == "":
-        st.warning("⚠️ Input Required: Please enter a headline to begin the scan.")
+# 6. Action Button & Logic
+if st.button("VERIFY AUTHENTICITY"):
+    if not headline.strip():
+        st.warning("⚠️ Please enter a headline to scan.")
     else:
-        # Professional loading sequence
-        with st.spinner("Analyzing linguistic patterns and cross-referencing database..."):
-            time.sleep(1.5) 
-            
-            # Text processing
+        with st.spinner("Scanning global patterns and linguistic structures..."):
+            time.sleep(1.2)
             text_vector = vectorizer.transform([headline])
-            
-            # Prediction
             prediction = model.predict(text_vector)[0]
             
-        # Official-looking Results
-        st.markdown("---")
-        st.markdown("### 📑 Official Scan Report")
-        
         if prediction == 'FAKE':
             st.markdown("""
-            <div class="result-box-fake">
-                <h3 style="color: #dc3545; margin-top: 0;">🚨 STATUS: LIKELY FABRICATED</h3>
-                <p style="margin-bottom: 0;"><b>Analysis:</b> The algorithm detected structural anomalies, sensationalism, or vocabulary patterns commonly associated with misinformation, clickbait, or unverified sources. <br><br><i>Recommendation: Do not share or publish without corroborating with recognized media outlets.</i></p>
-            </div>
+                <div class="result-card fake-news">
+                    <h2 style="color: #FF3B30; margin-top: 0; font-size: 1.6rem;">🚨 High Risk: Fabricated Content</h2>
+                    <p style="color: #555; font-size: 1.05rem; line-height: 1.6;">
+                        <strong>Analysis:</strong> The algorithm detected severe indicators of clickbait, sensationalism, or fabricated information. The linguistic structure fails standard journalistic integrity checks.
+                    </p>
+                    <p style="color: #888; font-size: 0.9rem; margin-bottom: 0;">
+                        <em>Action: Do not share or publish without corroborating with trusted outlets.</em>
+                    </p>
+                </div>
             """, unsafe_allow_html=True)
         else:
             st.balloons()
             st.markdown("""
-            <div class="result-box-real">
-                <h3 style="color: #28a745; margin-top: 0;">✅ STATUS: VERIFIED PATTERN</h3>
-                <p style="margin-bottom: 0;"><b>Analysis:</b> The headline aligns with standard journalistic patterns, objective phrasing, and verified syntax formats. <br><br><i>Recommendation: Appears credible. Standard editorial discretion is still advised.</i></p>
-            </div>
+                <div class="result-card real-news">
+                    <h2 style="color: #34C759; margin-top: 0; font-size: 1.6rem;">✅ Verified: Credible Pattern</h2>
+                    <p style="color: #555; font-size: 1.05rem; line-height: 1.6;">
+                        <strong>Analysis:</strong> This headline passes automated linguistic checks. It matches the syntax, objectivity, and structure typical of verified journalistic sources.
+                    </p>
+                    <p style="color: #888; font-size: 0.9rem; margin-bottom: 0;">
+                        <em>Note: Automated system clearance. Standard editorial discretion is still advised.</em>
+                    </p>
+                </div>
             """, unsafe_allow_html=True)
