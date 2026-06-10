@@ -1,161 +1,273 @@
+%%writefile app.py
 import streamlit as st
 import joblib
 import time
 
-# 1. Fast Model Loading
+# 1. Load the pre-trained machine learning model and vectorizer with caching
 @st.cache_resource
 def load_models():
     vec = joblib.load('vectorizer.pkl')
     mod = joblib.load('model.pkl')
     return vec, mod
 
-# 2. Enterprise Page Configuration (WIDE Layout for Dashboard feel)
-st.set_page_config(page_title="TruthLens | Threat Intelligence", page_icon="🛡️", layout="wide", initial_sidebar_state="expanded")
+# 2. Page Setup
+st.set_page_config(page_title="TruthLens AI", page_icon="🕵️‍♂️", layout="centered")
 
-# 3. Custom CSS for Enterprise Look
+# 3. Premium CSS Injection (Professional Clean Orange & White Theme)
 st.markdown("""
     <style>
-        /* Modern Button Styling */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        html, body, [class*="css"] {
+            font-family: 'Inter', sans-serif !important;
+        }
+        
+        /* Modern Gradient Title Styling */
+        .main-title {
+            font-size: 3.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #FF6A00 0%, #FF4500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 0px;
+            padding-bottom: 0px;
+            letter-spacing: -1px;
+        }
+        
+        /* Subtitle Styling */
+        .sub-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0.7;
+            letter-spacing: 1px;
+            margin-top: -5px;
+            margin-bottom: 35px;
+        }
+        
+        /* High-End Interactive Orange Button */
         .stButton>button {
-            background-color: #FF6A00;
+            background: linear-gradient(90deg, #FF6A00 0%, #FF4500 100%);
             color: #FFFFFF !important;
             border: none;
-            border-radius: 4px;
-            padding: 0.6rem;
-            font-size: 1rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
+            border-radius: 8px;
+            padding: 0.7rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 106, 0, 0.2);
         }
+        
         .stButton>button:hover {
-            background-color: #E65C00;
-            box-shadow: 0 4px 12px rgba(255, 106, 0, 0.3);
+            box-shadow: 0 6px 18px rgba(255, 106, 0, 0.4);
+            transform: translateY(-1px);
         }
         
-        /* Metric Styling */
-        div[data-testid="stMetricValue"] {
-            font-size: 2.5rem;
-            font-weight: 800;
-        }
-        
-        /* Headers */
-        .dashboard-title {
-            color: #FF6A00;
-            font-weight: 900;
-            font-size: 2.5rem;
-            margin-bottom: -10px;
-            letter-spacing: 1px;
-        }
-        .dashboard-subtitle {
-            color: #888;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            font-weight: 600;
-            margin-bottom: 30px;
+        /* Probability metric label */
+        .prob-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 5px;
         }
     </style>
     """, unsafe_allow_html=True)
 
-# Load Models
+# Load Models Safely
 try:
     vectorizer, model = load_models()
 except Exception:
-    st.error("CRITICAL ERROR: Analytical models disconnected. Please check server payload.")
+    st.error("⚠️ System Error: 'model.pkl' or 'vectorizer.pkl' is missing from the repository.")
     st.stop()
 
-# 4. Professional Sidebar Console
-with st.sidebar:
-    st.markdown("### 🎛️ SYSTEM CONSOLE")
-    st.markdown("---")
-    st.metric(label="NLP Engine Status", value="ONLINE", delta="Optimal Latency")
-    st.metric(label="Database Registry", value="Active", delta="Synced Today")
-    st.markdown("---")
-    st.caption("Secure connection established via Streamlit Cloud.")
-    st.caption("TRUTHLENS KERNEL v2.1.0")
+# 4. Interface Header (Original Context)
+st.markdown('<h1 class="main-title">TRUTHLENS</h1>', unsafe_allow_html=True)
+st.markdown('<p class="sub-title">Fake News Detector | Built by Gaurav</p>', unsafe_allow_html=True)
 
-# 5. Main Dashboard Header
-st.markdown('<h1 class="dashboard-title">TRUTHLENS ANALYTICS</h1>', unsafe_allow_html=True)
-st.markdown('<p class="dashboard-subtitle">MISINFORMATION THREAT INTELLIGENCE DASHBOARD</p>', unsafe_allow_html=True)
+# 5. User Input Section
+headline = st.text_input(
+    "Input Field", 
+    placeholder="Enter a news headline to verify its authenticity...",
+    label_visibility="collapsed"
+)
 
-# 6. Input Panel
-with st.container():
-    st.markdown("#### 📡 Query Terminal")
-    # Using text_area instead of text_input for a more substantial, professional feel
-    headline = st.text_area(
-        "Input Data", 
-        height=100, 
-        placeholder="Initialize sequence... Paste news headline or text excerpt here for algorithmic analysis.", 
-        label_visibility="collapsed"
-    )
-    
-    # Centering the button slightly using columns
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        analyze_btn = st.button("▶ EXECUTE DEEP SCAN", use_container_width=True)
+st.write("") # Spacer
 
-st.markdown("---")
-
-# 7. Analysis Engine & Dashboard Results
-if analyze_btn:
-    if not headline.strip():
-        st.warning("⚠️ Exception: Null input detected. Please provide text data.")
+# 6. Prediction and Analysis Logic
+if st.button("Analyze Headline", use_container_width=True):
+    if headline.strip() == "":
+        st.warning("⚠️ Please enter a headline to analyze!")
     else:
-        with st.spinner("Establishing neural pathways... Analyzing syntax, context, and linguistic entropy..."):
-            time.sleep(1.5)
+        # Spinner block
+        with st.spinner("AI is analyzing patterns, context, and vocabulary..."):
+            time.sleep(1.2)
             
+            # Transforming text and executing model prediction
             text_vector = vectorizer.transform([headline])
             prediction = model.predict(text_vector)[0]
             probabilities = model.predict_proba(text_vector)[0]
             
+            # Fetching probabilities based on original text framework
             fake_prob = probabilities[list(model.classes_).index('FAKE')]
             real_prob = probabilities[list(model.classes_).index('REAL')]
-
-        # Splitting results into a professional 2-column report
-        res_col1, res_col2 = st.columns([1, 1.2])
+            
+        st.markdown("### AI Analysis Result:")
         
-        with res_col1:
-            st.markdown("### 📊 Primary Verdict")
-            if prediction == 'FAKE':
-                st.error("🚨 HIGH THREAT: LIKELY FABRICATED")
-                st.metric(
-                    label="Fabrication Confidence Score", 
-                    value=f"{fake_prob*100:.2f}%", 
-                    delta="- Critical Deviation Detected", 
-                    delta_color="inverse"
-                )
+        # 7. Dynamic Adaptive Output Display
+        if prediction == 'FAKE':
+            with st.container(border=True):
+                st.error("🚨 **LIKELY FAKE NEWS**")
+                
+                # Probability Metric Reporting
+                st.markdown(f"<div class='prob-text' style='color: #FF3B30;'>Fakeness Probability: {fake_prob*100:.1f}%</div>", unsafe_allow_html=True)
                 st.progress(float(fake_prob))
-            else:
-                st.success("✅ SYSTEM CLEAR: CREDIBLE PATTERN")
-                st.metric(
-                    label="Authenticity Confidence Score", 
-                    value=f"{real_prob*100:.2f}%", 
-                    delta="+ Standard Patterns Matched", 
-                    delta_color="normal"
-                )
+                
+                st.write("Our AI detected patterns commonly found in misinformation, clickbait, or fabricated news. Please verify with credible sources before sharing.")
+        else:
+            st.balloons()
+            with st.container(border=True):
+                st.success("✅ **LIKELY REAL NEWS**")
+                
+                # Probability Metric Reporting
+                st.markdown(f"<div class='prob-text' style='color: #34C759;'>Authenticity Probability: {real_prob*100:.1f}%</div>", unsafe_allow_html=True)
                 st.progress(float(real_prob))
                 
-        with res_col2:
-            st.markdown("### 🔬 Diagnostic Breakdown")
-            # Using an expander to look like a detailed system log
-            with st.expander("View Detailed Linguistic Report", expanded=True):
-                if prediction == 'FAKE':
-                    st.markdown("""
-                    **Diagnostic Flags Triggered:**
-                    - **Sensationalism Index:** High
-                    - **Objective Syntax:** Failed
-                    - **Vocabulary Entropy:** Anomalous
-                    
-                    **System Conclusion:**
-                    The linguistic signature of this query closely mirrors known parameters of clickbait, propaganda, or unverified rumor-mill architecture. Extreme caution advised before redistribution.
-                    """)
-                else:
-                    st.markdown("""
-                    **Diagnostic Flags Triggered:**
-                    - **Sensationalism Index:** Nominal / Low
-                    - **Objective Syntax:** Passed
-                    - **Vocabulary Entropy:** Standard
-                    
-                    **System Conclusion:**
-                    Text aligns with objective reporting frameworks. Neutral vocabulary and standard grammatical markers detected. Structure is consistent with verified journalistic databases.
-                    """)
+                st.write("This headline appears credible and matches patterns of legitimate journalism. However, always stay critical!")%%writefile app.py
+import streamlit as st
+import joblib
+import time
+
+# 1. Load the pre-trained machine learning model and vectorizer with caching
+@st.cache_resource
+def load_models():
+    vec = joblib.load('vectorizer.pkl')
+    mod = joblib.load('model.pkl')
+    return vec, mod
+
+# 2. Page Setup
+st.set_page_config(page_title="TruthLens AI", page_icon="🕵️‍♂️", layout="centered")
+
+# 3. Premium CSS Injection (Professional Clean Orange & White Theme)
+st.markdown("""
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        html, body, [class*="css"] {
+            font-family: 'Inter', sans-serif !important;
+        }
+        
+        /* Modern Gradient Title Styling */
+        .main-title {
+            font-size: 3.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #FF6A00 0%, #FF4500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 0px;
+            padding-bottom: 0px;
+            letter-spacing: -1px;
+        }
+        
+        /* Subtitle Styling */
+        .sub-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            opacity: 0.7;
+            letter-spacing: 1px;
+            margin-top: -5px;
+            margin-bottom: 35px;
+        }
+        
+        /* High-End Interactive Orange Button */
+        .stButton>button {
+            background: linear-gradient(90deg, #FF6A00 0%, #FF4500 100%);
+            color: #FFFFFF !important;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 106, 0, 0.2);
+        }
+        
+        .stButton>button:hover {
+            box-shadow: 0 6px 18px rgba(255, 106, 0, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        /* Probability metric label */
+        .prob-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+# Load Models Safely
+try:
+    vectorizer, model = load_models()
+except Exception:
+    st.error("⚠️ System Error: 'model.pkl' or 'vectorizer.pkl' is missing from the repository.")
+    st.stop()
+
+# 4. Interface Header (Original Context)
+st.markdown('<h1 class="main-title">TRUTHLENS</h1>', unsafe_allow_html=True)
+st.markdown('<p class="sub-title">Fake News Detector | Built by Gaurav</p>', unsafe_allow_html=True)
+
+# 5. User Input Section
+headline = st.text_input(
+    "Input Field", 
+    placeholder="Enter a news headline to verify its authenticity...",
+    label_visibility="collapsed"
+)
+
+st.write("") # Spacer
+
+# 6. Prediction and Analysis Logic
+if st.button("Analyze Headline", use_container_width=True):
+    if headline.strip() == "":
+        st.warning("⚠️ Please enter a headline to analyze!")
+    else:
+        # Spinner block
+        with st.spinner("AI is analyzing patterns, context, and vocabulary..."):
+            time.sleep(1.2)
+            
+            # Transforming text and executing model prediction
+            text_vector = vectorizer.transform([headline])
+            prediction = model.predict(text_vector)[0]
+            probabilities = model.predict_proba(text_vector)[0]
+            
+            # Fetching probabilities based on original text framework
+            fake_prob = probabilities[list(model.classes_).index('FAKE')]
+            real_prob = probabilities[list(model.classes_).index('REAL')]
+            
+        st.markdown("### AI Analysis Result:")
+        
+        # 7. Dynamic Adaptive Output Display
+        if prediction == 'FAKE':
+            with st.container(border=True):
+                st.error("🚨 **LIKELY FAKE NEWS**")
+                
+                # Probability Metric Reporting
+                st.markdown(f"<div class='prob-text' style='color: #FF3B30;'>Fakeness Probability: {fake_prob*100:.1f}%</div>", unsafe_allow_html=True)
+                st.progress(float(fake_prob))
+                
+                st.write("Our AI detected patterns commonly found in misinformation, clickbait, or fabricated news. Please verify with credible sources before sharing.")
+        else:
+            st.balloons()
+            with st.container(border=True):
+                st.success("✅ **LIKELY REAL NEWS**")
+                
+                # Probability Metric Reporting
+                st.markdown(f"<div class='prob-text' style='color: #34C759;'>Authenticity Probability: {real_prob*100:.1f}%</div>", unsafe_allow_html=True)
+                st.progress(float(real_prob))
+                
+                st.write("This headline appears credible and matches patterns of legitimate journalism. However, always stay critical!")
