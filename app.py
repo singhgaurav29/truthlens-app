@@ -260,8 +260,9 @@ if analyze:
 st.markdown(
     """
     <div class="footer">
-        🕵️ TruthLens AI • Powered by Machine Learning 
+        🕵️ TruthLens AI • Powered by Machine Learning • Built by Gaurav
     </div>
     """,
     unsafe_allow_html=True
 )
+
